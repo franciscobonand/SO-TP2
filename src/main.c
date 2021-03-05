@@ -2,6 +2,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include "../lib/table.h"
+
+#define WRITE 1
+#define READ 2
+
+unsigned getPageShitfBit(int p_size) {
+  unsigned s, page;
+  s = 0;
+  while (p_size>1) {
+    p_size = p_size>>1;
+    s++;
+  }
+  return s;
+}
+
 
 void main(int argc, char* argv[]){
   clock_t start, end;
@@ -20,18 +35,24 @@ void main(int argc, char* argv[]){
   strcpy(file_path, argv[2]);
 
   int page_size = strtol(argv[3], NULL, 10); // page size in kilobytes
-
   int mem_size = strtol(argv[4], NULL, 10); // memory size in kilobytes (available to the process)
+  int table_size = mem_size / page_size; //table size in number of pages
+
+  int algorithm;
 
   // Implement factory for substitution algorithm?
   if (strcmp(subs_algorithm, "lru") == 0) {
     printf("lru!\n");
+    algorithm = 1;
   } else if (strcmp(subs_algorithm, "2a") == 0) {
     printf("2a!\n");
+    algorithm = 2;
   } else if (strcmp(subs_algorithm, "fifo") == 0) {
     printf("fifo!\n");
+    algorithm = 3;
   } else if (strcmp(subs_algorithm, "other") == 0) {
     printf("some other algorithm!\n");
+    algorithm = 4;
   } else {
     printf("Algoritmo de substituição não encontrado.\n");
   }
@@ -51,9 +72,28 @@ void main(int argc, char* argv[]){
     exit(1);
   }
 
+  Page* auxPage = newPage(); // Creates an auxiliar page structure to receive values in each iteration
+  Table* tableMem = initializeTable(table_size); // Creates a table to store pages
+  unsigned shift = getPageShitfBit(page_size); // Gets shitf bit to calculate pages address
+
   printf("Reading file %s\n", file_path);
-  while ((read = getline(&line, &len, log_file)) != -1) {
-    printf("%s", line);
+  unsigned addr;
+  char rw;
+  while (fscanf(log_file, "%x %c", &addr, &rw) != EOF) {
+    auxPage->value = addr;
+    auxPage->address = addr >> shift;
+    
+    if(rw == 'W') {
+      // printf("Write %d\n", auxPage->address);
+      updateMemory(WRITE, algorithm, auxPage, tableMem);
+    }
+    else if(rw == 'R') {
+      // printf("Read  %d\n", auxPage->address);
+      updateMemory(READ, algorithm, auxPage, tableMem);
+    }
+    else {
+      printf("Invalid command for page %d\n", auxPage->address);
+    }
   }
 
   fclose(log_file);
