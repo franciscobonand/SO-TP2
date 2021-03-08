@@ -6,7 +6,7 @@
 
 unsigned getPageShitfBit(int p_size) {
   unsigned s, page;
-  s = 0;
+  s = 10;
   while (p_size>1) {
     p_size = p_size>>1;
     s++;
@@ -37,25 +37,25 @@ void main(int argc, char* argv[]){
 
   int algorithm;
 
+  printf("Arquivo de entrada: %s\n", file_path);
+  printf("Tamanho das páginas: %d\n", page_size);
+  printf("Tamanho da memória: %d\n", mem_size);
+
   if (strcmp(subs_algorithm, "lru") == 0) {
-    printf("lru!\n");
+    printf("Algoritmo: lru\n");
     algorithm = 1;
   } else if (strcmp(subs_algorithm, "2a") == 0) {
-    printf("2a!\n");
+    printf("Algoritmo: 2a\n");
     algorithm = 2;
   } else if (strcmp(subs_algorithm, "fifo") == 0) {
-    printf("fifo!\n");
+    printf("Algoritmo: fifo\n");
     algorithm = 3;
   } else if (strcmp(subs_algorithm, "other") == 0) {
-    printf("some other algorithm!\n");
+    printf("Algoritmo: outro\n");
     algorithm = 4;
   } else {
     printf("Algoritmo de substituição não encontrado.\n");
   }
-
-  printf("Arquivo de entrada: %s\n", file_path);
-  printf("Tamanho das páginas: %d\n", page_size);
-  printf("Tamanho da memória: %d\n", mem_size);
 
   FILE *log_file;
   char * line = NULL;
@@ -80,11 +80,11 @@ void main(int argc, char* argv[]){
     auxPage->address = addr >> shift;
 
     if(rw == 'W') {
-      printf("Write %ld\n", auxPage->address);
+      // printf("Write %ld\n", auxPage->address);
       updateMemory(WRITE, algorithm, auxPage, tableMem);
     }
     else if(rw == 'R') {
-      printf("Read  %ld\n", auxPage->address);
+      // printf("Read  %ld\n", auxPage->address);
       updateMemory(READ, algorithm, auxPage, tableMem);
     }
     else {
@@ -93,6 +93,9 @@ void main(int argc, char* argv[]){
   }
 
   fclose(log_file);
+
+  printf("Paginas lidas: %d\n", tableMem->pagefaults);
+  printf("Paginas escritas: %d\n", tableMem->dirtyPages);
 
   end = clock();
   printf("Tempo gasto: %f\n", ((double) (end-start) / CLOCKS_PER_SEC));

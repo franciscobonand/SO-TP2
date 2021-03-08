@@ -27,11 +27,15 @@ Table* initializeTable(int size) {
 int getLRU(Page* pages, int clock, int tableSize) {
     int lru;
     int max = 0;
-    for(int i=0; i<tableSize; i++) {
-        if(max < (pages[i].timeSinceAcc - clock)) {
-            max = pages[i].timeSinceAcc;
-            lru = i;
-        }
+    int elapsedTimeSinceAcc;
+
+    //printf("clock: %d\n", clock);
+    for(int i=0; i < tableSize; i++) {
+      elapsedTimeSinceAcc = clock - pages[i].timeSinceAcc;
+      if(max < elapsedTimeSinceAcc) {
+        max = elapsedTimeSinceAcc;
+        lru = i;
+      }
     }
     return lru;
 }
@@ -49,9 +53,6 @@ void updateMemory(int op, int alg, Page* page, Table* table) {
 
     if (!pageInTable && table->currOccupancy < table->size) {
       // Table has space available for new pages: insert page in table
-      if (table->currOccupancy == 0) {
-        table->luIndex = index;
-      }
 
       table->pagefaults++;
 
@@ -60,7 +61,6 @@ void updateMemory(int op, int alg, Page* page, Table* table) {
     }
     else if (!pageInTable && table->currOccupancy == table->size) {
       // Table is full: insert page in table according to algorithm
-      // Paginas lidas == pagefault?
       table->pagefaults++;
 
       if (table->pages[index].isDirty){
@@ -69,7 +69,6 @@ void updateMemory(int op, int alg, Page* page, Table* table) {
 
       table->pages[index] = *page;
     }
-
     // Already in table: just set to dirty in case of write
     if (op == WRITE) {
       table->pages[index].isDirty = 1;
@@ -81,11 +80,11 @@ void updateMemory(int op, int alg, Page* page, Table* table) {
 // pageInTable is 1 if the page is in the table, and 0 otherwise
 // index is the int where the new page should be inserted
 void alreadyExists(int pageAddr, Table* table, int* pageInTable, int* index, int alg) {
-    for(int i=0; i<table->currOccupancy; i++) {
+    for(int i=0; i < table->currOccupancy; i++) {
         if (pageAddr == table->pages[i].address) {
             *pageInTable = 1;
             *index = i;
-            break;
+            return;
         }
     }
 
@@ -103,10 +102,11 @@ void alreadyExists(int pageAddr, Table* table, int* pageInTable, int* index, int
               break;
 
           case 2: // 2a
-              for(int i=table->luIndex; i<table->size; i++) {
+              for(int i = table->luIndex; i < table->size; i++) {
                   if(table->pages[i].nxtVictim) {
                       *index = i;
-                      table->luIndex = (table->luIndex+1) % table->size;
+                      table->luIndex++;
+                      table->luIndex = table->luIndex % table->size;
 
                       break;
                   } else {
@@ -121,7 +121,8 @@ void alreadyExists(int pageAddr, Table* table, int* pageInTable, int* index, int
 
           case 3: // fifo
               *index = table->luIndex;
-              table->luIndex = (table->luIndex+1) % table->size;
+              table->luIndex++;
+              table->luIndex = table->luIndex % table->size;
               break;
 
           default: // other
