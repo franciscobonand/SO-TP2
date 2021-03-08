@@ -4,9 +4,6 @@
 #include <time.h>
 #include "../lib/table.h"
 
-#define WRITE 1
-#define READ 2
-
 unsigned getPageShitfBit(int p_size) {
   unsigned s, page;
   s = 0;
@@ -40,7 +37,6 @@ void main(int argc, char* argv[]){
 
   int algorithm;
 
-  // Implement factory for substitution algorithm?
   if (strcmp(subs_algorithm, "lru") == 0) {
     printf("lru!\n");
     algorithm = 1;
@@ -79,20 +75,20 @@ void main(int argc, char* argv[]){
   printf("Reading file %s\n", file_path);
   unsigned addr;
   char rw;
+
   while (fscanf(log_file, "%x %c", &addr, &rw) != EOF) {
-    auxPage->value = addr;
     auxPage->address = addr >> shift;
-    
+
     if(rw == 'W') {
-      // printf("Write %d\n", auxPage->address);
+      printf("Write %ld\n", auxPage->address);
       updateMemory(WRITE, algorithm, auxPage, tableMem);
     }
     else if(rw == 'R') {
-      // printf("Read  %d\n", auxPage->address);
+      printf("Read  %ld\n", auxPage->address);
       updateMemory(READ, algorithm, auxPage, tableMem);
     }
     else {
-      printf("Invalid command for page %d\n", auxPage->address);
+      printf("Invalid command for page %ld\n", auxPage->address);
     }
   }
 
