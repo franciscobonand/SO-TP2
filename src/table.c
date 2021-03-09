@@ -77,6 +77,10 @@ void updateMemory(int op, int alg, Page* page, Table* table) {
 
       table->pages[index] = *page;
     }
+    else {
+        // Page is in table and it's bein accessed again
+        table->pages[index].nxtVictim = 1;
+    }
     // Already in table: just set to dirty in case of write
     if (op == WRITE) {
       table->pages[index].isDirty = 1;
@@ -111,14 +115,14 @@ void alreadyExists(int pageAddr, Table* table, int* pageInTable, int* index, int
 
           case 2: // 2a
               for(int i = table->luIndex; i < table->size; i++) {
-                  if(table->pages[i].nxtVictim) {
+                  if(!table->pages[i].nxtVictim) {
                       *index = i;
                       table->luIndex++;
                       table->luIndex = table->luIndex % table->size;
 
                       break;
                   } else {
-                      table->pages[i].nxtVictim = 1;
+                      table->pages[i].nxtVictim = 0;
                   }
 
                   if (i == table->size - 1) {
