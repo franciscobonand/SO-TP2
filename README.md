@@ -10,7 +10,7 @@ Na entrada do problema, são especificados:
 - O tamanho de cada uma das páginas (de 2KB a 64KB);
 - O tamanho total da memória física disponível (de 128KB a 16384KB);
 
-# Escolhas de implementação  
+# Implementação  
 A fim de implementar a memória virtual e as páginas, definimos as seguintes estruturas para cada uma:  
 - Uma **Página** contém as seguintes informações:
   - Endereço (address): responsável por armazenar o endereço daquela página na memória;
@@ -28,3 +28,17 @@ A fim de implementar a memória virtual e as páginas, definimos as seguintes es
   - Páginas Sujas (dirtyPages): contador de páginas sujas que necessitaram ser propagadas para o disco;
 
 Além das estruturas acima, é relevante ressaltar que optamos por contar o tempo de execução do programa (clock, na estrutura da Tabela) utilizando um contador, que é acrescido de 1 a cada nova iteração sob o arquivo de entrada.
+
+# Execução
+A fim de executar o programa, primeiramente deve-se rodar o comando `make` para gerar o arquivo executável. Uma vez que esse arquivo tenha sido criado, esperam-se como parâmetros argumentos do seguinte tipo:  
+`tp2virtual [algoritmo] arquivo.log 4 128`  
+Onde:
+- tp2virtual: é o nome do arquivo executável que foi gerado após o `make`;
+- [algoritmo]: especifica qual algoritmo de substituição de páginas deverá ser utilizado;
+  - First In First Out: "fifo";
+  - Least Recently Used: "lru";
+  - Segunda Chance: "2a";
+  - Random: "rand";
+- arquivo.log: deve ser o nome do arquivo do tipo .log que contém a sequência de endereços de memória acessados, assim como o tipo de acesso (leitura ou escrita) de cada endereço;
+- Esse parâmetro define o tamanho de uma página, podendo ser de 2 a 64 (deve ser potência de 2);
+- Esse parâmetro define o tamanho total da memória física disponível para o processo, podendo ser de 128 a 16384 (deve ser potência de 2);
