@@ -15,9 +15,15 @@ unsigned getPageShitfBit(int p_size) {
 }
 
 
+void printTable(Table* table){
+  printf("Endereço lógico  | Dirty bit \n");
+  for(int i=0; i < table->currOccupancy; i++) {
+    printf("\t %lx \t | \t %d\n", table->pages[i].address, table->pages[i].isDirty);
+  }
+}
+
 void main(int argc, char* argv[]){
   clock_t start, end;
-  start = clock();
 
   if (argc != 5) {
     printf("Número incorreto de parâmetros.\n");
@@ -76,6 +82,7 @@ void main(int argc, char* argv[]){
   unsigned addr;
   char rw;
 
+  start = clock();
   while (fscanf(log_file, "%x %c", &addr, &rw) != EOF) {
     auxPage->address = addr >> shift;
 
@@ -91,12 +98,13 @@ void main(int argc, char* argv[]){
       printf("Invalid command for page %ld\n", auxPage->address);
     }
   }
+  end = clock();
 
   fclose(log_file);
 
   printf("Paginas lidas: %d\n", tableMem->pagefaults);
   printf("Paginas escritas: %d\n", tableMem->dirtyPages);
-
-  end = clock();
   printf("Tempo gasto: %f\n", ((double) (end-start) / CLOCKS_PER_SEC));
+  printTable(tableMem);
+
 }
