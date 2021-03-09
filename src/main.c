@@ -79,7 +79,6 @@ void main(int argc, char* argv[]){
   Table* tableMem = initializeTable(table_size); // Creates a table to store pages
   unsigned shift = getPageShitfBit(page_size); // Gets shitf bit to calculate pages address
 
-  printf("Lendo o arquivo %s\n", file_path);
   unsigned addr;
   char rw;
 
