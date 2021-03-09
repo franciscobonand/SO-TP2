@@ -78,30 +78,35 @@ int main(int argc, char* argv[]){
 
   unsigned addr;
   char rw;
+  int rPages, wPages = 0;
 
   start = clock();
   while (fscanf(log_file, "%x %c", &addr, &rw) != EOF) {
     auxPage->address = addr >> shift;
 
     if(rw == 'W') {
-      // printf("Write %ld\n", auxPage->address);
+      wPages++;
       updateMemory(WRITE, algorithm, auxPage, tableMem);
     }
     else if(rw == 'R') {
-      // printf("Read  %ld\n", auxPage->address);
+      rPages++;
       updateMemory(READ, algorithm, auxPage, tableMem);
     }
     else {
-      printf("Invalid command for page %ld\n", auxPage->address);
+      printf("Comando inválido para página %ld\n", auxPage->address);
     }
   }
   end = clock();
 
   fclose(log_file);
 
-  printf("Paginas lidas: %d\n", tableMem->pagefaults);
-  printf("Paginas escritas: %d\n", tableMem->dirtyPages);
-  printf("Tempo gasto: %f\n", ((double) (end-start) / CLOCKS_PER_SEC));
+  printf("Páginas lidas: %d\n", rPages);
+  printf("Páginas escritas: %d\n\n", wPages);
+
+  printf("Page Faults: %d\n", tableMem->pagefaults);
+  printf("Dirty Pages: %d\n", tableMem->dirtyPages);
+  printf("Tempo gasto: %f\n\n", ((double) (end-start) / CLOCKS_PER_SEC));
+  printf("Tabela de páginas após última iteração: \n");
   printTable(tableMem);
 
   return 0;

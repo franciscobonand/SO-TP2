@@ -1,6 +1,6 @@
 IDIR=lib
 CC=gcc
-CFLAGS=-g -Wall -lpthread -I$(IDIR)
+CFLAGS=-g -Wall -I$(IDIR)
 TFLAGS=-g -Wall -I$(IDIR)
 
 ODIR=out
