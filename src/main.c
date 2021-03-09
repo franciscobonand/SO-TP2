@@ -43,21 +43,22 @@ void main(int argc, char* argv[]){
 
   int algorithm;
 
+  printf("Executando o simulador...\n");
   printf("Arquivo de entrada: %s\n", file_path);
   printf("Tamanho das páginas: %d\n", page_size);
   printf("Tamanho da memória: %d\n", mem_size);
 
   if (strcmp(subs_algorithm, "lru") == 0) {
-    printf("Algoritmo: lru\n");
+    printf("Algoritmo: LRU\n");
     algorithm = 1;
   } else if (strcmp(subs_algorithm, "2a") == 0) {
     printf("Algoritmo: 2a\n");
     algorithm = 2;
   } else if (strcmp(subs_algorithm, "fifo") == 0) {
-    printf("Algoritmo: fifo\n");
+    printf("Algoritmo: FIFO\n");
     algorithm = 3;
-  } else if (strcmp(subs_algorithm, "other") == 0) {
-    printf("Algoritmo: outro\n");
+  } else if (strcmp(subs_algorithm, "rand") == 0) {
+    printf("Algoritmo: Random\n");
     algorithm = 4;
   } else {
     printf("Algoritmo de substituição não encontrado.\n");
@@ -78,7 +79,7 @@ void main(int argc, char* argv[]){
   Table* tableMem = initializeTable(table_size); // Creates a table to store pages
   unsigned shift = getPageShitfBit(page_size); // Gets shitf bit to calculate pages address
 
-  printf("Reading file %s\n", file_path);
+  printf("Lendo o arquivo %s\n", file_path);
   unsigned addr;
   char rw;
 
