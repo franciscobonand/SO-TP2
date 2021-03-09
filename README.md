@@ -30,7 +30,7 @@ A fim de implementar a memória virtual e as páginas, definimos as seguintes es
 Além das estruturas acima, é relevante ressaltar que optamos por contar o tempo de execução do programa (clock, na estrutura da Tabela) utilizando um contador, que é acrescido de 1 a cada nova iteração sob o arquivo de entrada.
 
 # Execução
-A fim de executar o programa, primeiramente deve-se rodar o comando `make` para gerar o arquivo executável. Uma vez que esse arquivo tenha sido criado, esperam-se como parâmetros argumentos do seguinte tipo:  
+A fim de executar o programa, primeiramente deve-se compilá-lo com o comando `make`. Uma vez que o arquivo executável tenha sido criado, esperam-se como parâmetros os seguintes:  
 `tp2virtual [algoritmo] arquivo.log 4 128`  
 Onde:
 - tp2virtual: é o nome do arquivo executável que foi gerado após o `make`;
@@ -42,3 +42,22 @@ Onde:
 - arquivo.log: deve ser o nome do arquivo do tipo .log que contém a sequência de endereços de memória acessados, assim como o tipo de acesso (leitura ou escrita) de cada endereço;
 - Esse parâmetro define o tamanho de uma página, podendo ser de 2 a 64 (deve ser potência de 2);
 - Esse parâmetro define o tamanho total da memória física disponível para o processo, podendo ser de 128 a 16384 (deve ser potência de 2);
+
+## Passo-a-passo do código
+Na função **main**, primeiramente os parâmetros fornecidos pelo usuário são armazenados em variáveis, e o tamanho total da tabela de páginas é calculado ao se dividir o tamanho total da memória física disponível pelo tamanho de uma página. Além disso, é calculado também quantos bits menos significativos devem ser descartados para identificar a página associada a cada um dos endereços informados nas linhas do arquivo de entrada.  
+Após essas definições, inicia-se a tabela de páginas, e também é criada uma página auxiliar. Com isso, o arquivo .log é aberto e itera-se por cada uma de suas linhas. Para cada linha, o endereço da página é salvo na página auxiliar que foi criada, e a letra "W" ou "R" que é lida do arquivo define se a tabela será atualizada com base em um comando de leitura ou de escrita - essa atualização é responsabilidade da função `updateMemory`, que será descrita abaixo.  
+Por fim, depois da passagem por todo o arquivo, este é fechado e mostra-se ao usuário o tempo gasto para executar o programa, assim como o **total de page faults (Páginas lidas)** e o **total de dirty pages (Páginas escritas)** que tiveram que ser propagadas para o disco, e o programa se encerra.  
+
+Dentro do arquivo **table.c**, está definida a função **updateMemory**, a qual é responsável pela atualização e manutenção da tabela de páginas (essa função é chamada na main em cada iteração pelo arquivo). Nela, além de ser  feito o controle do tempo atual de execução (contador clock), é feita a inserção/substituição de páginas na tabela.  
+Primeiramente, executa-se a função `alreadyExists`, a qual informa se a página em questão já está inserida na tabela, assim qual é a posição na tabela que a nova página deve ser inserida (varia de acordo com o algoritmo de substituição selecionado). A partir do retorno, existem três casos possíveis:
+- A página não existe na tabela, e a tabela não está cheia
+  - Nesse caso, a página é inserida na próxima posição livre da tabela
+  - O contador de page faults é acrescido de 1
+  - A ocupação atual da tabela é acrescida de 1
+- A página não existe na tabela, e a tabela está cheia
+  - Nesse caso, a página que está na posição retornada pela função `alreadyExists` é substituída pela nova página
+  - O contador de page faults é acrescido de 1
+  - Se a página retirada estiver "suja" (isDirty ser true) o contador de dirty pages é acrescido de 1
+- A página já existe na tabela
+  - Nesse caso, não ocorre substituição. O bit de referência é atualizado para 1  
+E, em todo caso, se for uma operação de escrita a página é definida como "suja" (dirtyBit é setado como 1).
