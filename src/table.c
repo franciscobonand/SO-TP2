@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include<time.h>
 #include "../lib/table.h"
 
 Page* newPage() {
@@ -14,7 +15,6 @@ Page* newPage() {
 Table* initializeTable(int size) { 
   Table* newTable = malloc(sizeof(Table));
   newTable->pages = (Page*) calloc(size, sizeof(Page));
-  newTable->mrvIndex = (int*) calloc(size, sizeof(int));
   newTable->luIndex = 0;
   newTable->size = size;
   newTable->currOccupancy = 0;
@@ -29,7 +29,6 @@ int getLRU(Page* pages, int clock, int tableSize) {
     int max = 0;
     int elapsedTimeSinceAcc;
 
-    //printf("clock: %d\n", clock);
     for(int i=0; i < tableSize; i++) {
       elapsedTimeSinceAcc = clock - pages[i].timeSinceAcc;
       if(max < elapsedTimeSinceAcc) {
@@ -38,6 +37,15 @@ int getLRU(Page* pages, int clock, int tableSize) {
       }
     }
     return lru;
+}
+
+int returnRandom(int luIndx, int tableSize) {
+    clock_t start;
+    start = clock();
+    srand(start);
+    int numb = rand() % 3;
+    numb = (luIndx + numb) % tableSize;
+    return numb;
 }
 
 // updateMemory reads/writes a page with a given algorithm on a table
@@ -125,8 +133,10 @@ void alreadyExists(int pageAddr, Table* table, int* pageInTable, int* index, int
               table->luIndex = table->luIndex % table->size;
               break;
 
-          default: // other
-              printf("Other algorithm\n");
+          default: // rand
+              *index = returnRandom(table->luIndex, table->size);
+              table->luIndex++;
+              table->luIndex = table->luIndex % table->size;
               break;
         }
     }

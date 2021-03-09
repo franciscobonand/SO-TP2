@@ -13,7 +13,6 @@ typedef struct Page {
 
 typedef struct Table {
     Page *pages;
-    int *mrvIndex; // keeps the index of the Most Recent Visited page
     int luIndex; // luIndex indicates the last used page. the second to last is luIndex + 1 and so on
     int size;
     int currOccupancy;
