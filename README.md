@@ -61,3 +61,24 @@ Primeiramente, executa-se a função `alreadyExists`, a qual informa se a págin
 - A página já existe na tabela
   - Nesse caso, não ocorre substituição. O bit de referência é atualizado para 1  
 E, em todo caso, se for uma operação de escrita a página é definida como "suja" (dirtyBit é setado como 1).
+
+# Análise de resultados
+Nessa seção, será feita uma breve apresentação de cada um dos algoritmos de substituição empregados, assim como a análise de complexidade esperada de cada um e o resultado real obtido. Além disso, também serão feitas comparações entre os algoritmos tomando como base a variação dos números de page faults, dirty pages e tempo de execução conforme o tamanho da tabela de páginas (relação tamanho memória total / tamanho da página) também varia.  
+
+## LRU
+O LRU, ou Least Recently Used, é um algoritmo de substituição que se baseia no tempo decorrido desde que cada página foi acessada. Basicamente, a página a ser retirada é aquela que foi acessada há mais tempo (max(tempo atual - tempo em que a página foi acessada)).  
+Para encontrar a página que foi acessada há mais tempo, portanto, é necessário percorrer toda a tabela de páginas - isso implica que esse algoritmo tem custo **O(n)**, onde n é o número de páginas da tabela.  
+
+## FIFO
+O FIFO, ou First In First Out, é um algoritmo de substituição que consiste no que seu próprio nome já diz: a primeira página a entrar é a primeira página a sair. Ou seja, a página a ser substituída é aquela que entrou primeiro na tabela (em relação às demais páginas).  
+Na implementação que foi feita, a tabela de páginas possui um campo responsável por armazenar a posição da primeira página que foi inserida, e toda vez que essa página é retirada esse campo passa a apontar para a próxima página que possui essa propriedade. Dessa forma, o algoritmo é **O(1)**.
+
+## Segunda Chance (2a)
+O algoritmo Segunda Chance é bem similar ao FIFO, mas possui um diferencial: as páginas possuem um bit de referência. Esse bit é inicializado como 0 e, caso a página seja acessada mais de uma vez, ele se torna 1.  
+O funcionamento do algoritmo é similar ao FIFO porém, caso o bit de referência da primeira página (que seria a substituída no FIFO) seja igual a 1, aquela página não é substituída, seu bit de referência é definido como 0 e o algoritmo passa para a próxima página (que, no caso, seria a segunda página a ter sido inserida). Essa iteração continua pela tabela de páginas até que uma página com bit de referência igual a 0 seja encontrada e, então, substituída.  
+Devido ao fato de ser necessário iterar pela tabela de páginas para encontrar uma página válida, esse algoritmo é **O(n)**, onde n é o tamanho da tabela.
+
+## Random
+O algoritmo Random, assim como o FIFO e o Segunda Chance, se baseia no campo da tabela de páginas que aponta para a primeira página a ter sido inserida na tabela. Todavia, o algoritmo gera um número inteiro aleatório entre 0 e 2, o qual é somado ao valor do campo da tabela. Dessa forma, Random seleciona aleatóriamente uma das três primeiras páginas que foram inseridas para ser substituída. Como a obtenção dessa página é "direta", esse algoritmo também é **O(1)**.
+
+## Comparação entre algoritmos
