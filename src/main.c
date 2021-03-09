@@ -5,7 +5,7 @@
 #include "../lib/table.h"
 
 unsigned getPageShitfBit(int p_size) {
-  unsigned s, page;
+  unsigned s;
   s = 10;
   while (p_size>1) {
     p_size = p_size>>1;
@@ -22,7 +22,7 @@ void printTable(Table* table){
   }
 }
 
-void main(int argc, char* argv[]){
+int main(int argc, char* argv[]){
   clock_t start, end;
 
   if (argc != 5) {
@@ -65,9 +65,6 @@ void main(int argc, char* argv[]){
   }
 
   FILE *log_file;
-  char * line = NULL;
-  size_t len = 0;
-  ssize_t read;
   log_file = fopen(file_path, "r");
 
   if (log_file == NULL){
@@ -106,5 +103,7 @@ void main(int argc, char* argv[]){
   printf("Paginas escritas: %d\n", tableMem->dirtyPages);
   printf("Tempo gasto: %f\n", ((double) (end-start) / CLOCKS_PER_SEC));
   printTable(tableMem);
+
+  return 0;
 
 }
