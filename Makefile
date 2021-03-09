@@ -6,6 +6,7 @@ TFLAGS=-g -Wall -I$(IDIR)
 ODIR=out
 SDIR=src
 
+
 TARGET=tp2virtual
 
 _DEPS = table.h
@@ -16,7 +17,7 @@ OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
 $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	mkdir -p $(ODIR) && $(CC) -c -o $@ $< $(CFLAGS)
 
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
