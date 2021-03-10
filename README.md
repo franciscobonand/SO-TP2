@@ -142,3 +142,5 @@ Assim como na análise de _page faults_, os gráficos de _dirty pages_ se compor
     <img src="./doc/images/simulador-dirtypages.png"> </img>
 </div>
 
+[@Lucas Caetano Lopes Rodrigues](https://github.com/lucasclopesr)  
+[@Francisco Bonome Andrade](https://github.com/franciscobonand)
